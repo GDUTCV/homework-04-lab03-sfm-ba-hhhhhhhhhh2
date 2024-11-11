@@ -44,8 +44,24 @@ def compute_ba_residuals(parameters: np.ndarray, intrinsics: np.ndarray, num_cam
     NOTE: DO NOT USE LOOPS 
     HINT: I used np.matmul; np.sum; np.sqrt; np.square, np.concatenate etc.
     """
-    
+    #选择3D点
+    selected_points3d = points3d[points3d_idxs]
 
-    
+    #3d点转换为齐次坐标
+    ho_3d_points = np.concatenate((selected_points3d, np.ones((selected_points3d.shape[0], 1))), axis=1)
+    ho_3d_points_T = np.transpose(ho_3d_points)
+
+    #计算投影点
+    selected_extrinsics = extrinsics[camera_idxs]
+    P = np.matmul(intrinsics, selected_extrinsics)
+
+    #用投影矩阵重新投影2d点
+    calculated_points2d = np.einsum('ijk, ki->ij', P, ho_3d_points_T)
+    calculated_points2d /= calculated_points2d[:, -1].reshape((calculated_points2d.shape[0], 1))
+    calculated_points2d = calculated_points2d[:, :-1]
+
+    #计算残差
+    residuals = np.linalg.norm(points2d - calculated_points2d, axis=1)
+
     """ END YOUR CODE HERE """
     return residuals

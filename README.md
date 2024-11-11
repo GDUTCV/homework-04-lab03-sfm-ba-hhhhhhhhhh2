@@ -23,3 +23,6 @@ To visualize, run:
 ```bash
 python visualize.py --dataset mini-temple  # visualize 3d point cloud from reconstruction.
 ```
+结果图
+![img.png](img.png)
+![img_1.png](img_1.png)
